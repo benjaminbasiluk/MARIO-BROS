@@ -21,6 +21,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05050f;font-family:
 #loginScreen .error{color:#E52521;font-size:clamp(12px,1.8vw,20px);min-height:1.5em;margin:4px 0}
 #loginScreen .enter-hint{color:#0ff;font-size:clamp(12px,1.8vw,22px);margin:8px 0}
 #loginScreen .enter-hint2{color:#888;font-size:clamp(10px,1.5vw,18px);margin:4px 0}
+#loginScreen .login-btn{background:#049C8C;border:none;border-radius:8px;padding:10px 32px;font-size:clamp(14px,2vw,24px);color:#fff;cursor:pointer;margin:8px auto;display:block;font-weight:bold;transition:background .2s}
+#loginScreen .login-btn:hover{background:#06b8a5}
+#loginScreen .login-btn:active{background:#037a6e}
 #loginScreen .top-title{color:#ffc864;font-size:clamp(13px,2vw,24px);margin:20px 0 6px}
 .score-table{width:100%;max-width:520px;margin:0 auto;border-collapse:collapse;font-size:clamp(11px,1.5vw,22px)}
 .score-table th{color:#FBD000;font-weight:normal;border-bottom:1px solid rgba(28,63,148,.4);padding:4px 6px}
@@ -80,6 +83,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05050f;font-family:
     <div class="nombre-label">Ingresa tu nombre:</div>
     <input class="nombre-input" id="nameInput" maxlength="15" autocomplete="off">
     <div class="error" id="loginError"></div>
+    <button class="login-btn" id="loginBtn">JUGAR</button>
+    <button class="login-btn" id="loginBtn">JUGAR</button>
     <div class="enter-hint hidden" id="enterHint">Presiona ENTER para comenzar</div>
     <div class="enter-hint2" id="enterHint2">Escribe tu nombre (min 3 letras) y presiona ENTER</div>
     <div class="top-title">🏆 Top de Puntuaciones Históricas</div>
@@ -1060,23 +1065,29 @@ nameInput.addEventListener('input',()=>{
   }
 });
 
+function doLogin(){
+  const nombre=nameInput.value.trim();
+  if(nombre.length<3){loginError.textContent='Mínimo 3 letras';return}
+  const existing=loadScores();
+  if(existing.some(e=>e.nombre.toLowerCase()===nombre.toLowerCase())){loginError.textContent='Nombre ya en uso';return}
+  loginScreen.classList.add('hidden');
+  menuScreen.classList.remove('hidden');
+  document.getElementById('arrowsImg').src='arrows.png';
+  game=new Game();
+  game.playerName=nombre;
+  game.state='menu';
+}
+
 nameInput.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    const nombre=nameInput.value.trim();
-    if(nombre.length<3){loginError.textContent='Mínimo 3 letras';return}
-    const existing=loadScores();
-    if(existing.some(e=>e.nombre.toLowerCase()===nombre.toLowerCase())){loginError.textContent='Nombre ya en uso';return}
-    loginScreen.classList.add('hidden');
-    menuScreen.classList.remove('hidden');
-    document.getElementById('arrowsImg').src='arrows.png';
-    game=new Game();
-    game.playerName=nombre;
-    game.state='menu';
-  }
+  if(e.key==='Enter'){e.preventDefault();doLogin()}
 });
 
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('loginBtn').addEventListener('touchstart',e=>{e.preventDefault();doLogin()});
+
 document.getElementById('btnSpace').addEventListener('click',()=>{
-  if(game.state==='menu')game.start();
+  if(!loginScreen.classList.contains('hidden')&&game&&game.state==='menu')doLogin();
+  else if(game.state==='menu')game.start();
   else if(game.state==='gameover')restartGame();
 });
 
@@ -1088,7 +1099,8 @@ document.addEventListener('keydown',e=>{
   if(e.code==='Space')e.preventDefault();
   if(e.code==='KeyP'&&game&&(game.state==='playing'||game.state==='countdown')){game.paused=!game.paused}
   if(e.code==='Space'){
-    if(game.state==='menu'){e.preventDefault();game.start()}
+    if(!loginScreen.classList.contains('hidden')&&game&&game.state==='menu'){e.preventDefault();doLogin()}
+    else if(game.state==='menu'){e.preventDefault();game.start()}
     else if(game.state==='gameover'){e.preventDefault();restartGame()}
   }
 });
@@ -1168,7 +1180,8 @@ function processJoy(tx,ty,cx,cy){
 
 btnSpace.addEventListener('touchstart',e=>{
   e.preventDefault();e.currentTarget.classList.add('pressed');
-  if(game.state==='menu')game.start();
+  if(!loginScreen.classList.contains('hidden')&&game&&game.state==='menu')doLogin();
+  else if(game.state==='menu')game.start();
   else if(game.state==='gameover')restartGame();
 });
 btnSpace.addEventListener('touchend',e=>{e.preventDefault();e.currentTarget.classList.remove('pressed')});
