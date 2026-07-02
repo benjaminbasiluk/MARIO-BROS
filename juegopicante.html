@@ -84,7 +84,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05050f;font-family:
     <input class="nombre-input" id="nameInput" maxlength="15" autocomplete="off">
     <div class="error" id="loginError"></div>
     <button class="login-btn" id="loginBtn">JUGAR</button>
-    <button class="login-btn" id="loginBtn">JUGAR</button>
     <div class="enter-hint hidden" id="enterHint">Presiona ENTER para comenzar</div>
     <div class="enter-hint2" id="enterHint2">Escribe tu nombre (min 3 letras) y presiona ENTER</div>
     <div class="top-title">🏆 Top de Puntuaciones Históricas</div>
@@ -97,7 +96,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05050f;font-family:
   <div class="panel">
     <h1>¡BOOM CÓSMICO!</h1>
     <div class="sub">⭐ Sobrevive, explora y conquista el universo ⭐</div>
-    <img class="controles-img" id="arrowsImg" src="" alt="Flechas">
+    <svg class="controles-img" id="arrowsImg" viewBox="0 0 200 200" width="200" height="200" style="display:block;margin:10px auto">
+      <rect x="70" y="10" width="60" height="50" rx="6" fill="#1C3F94" stroke="#4a7abf" stroke-width="2"/>
+      <polygon points="100,20 90,42 110,42" fill="#FBD000"/>
+      <rect x="70" y="140" width="60" height="50" rx="6" fill="#1C3F94" stroke="#4a7abf" stroke-width="2"/>
+      <polygon points="100,178 90,156 110,156" fill="#FBD000"/>
+      <rect x="140" y="70" width="50" height="60" rx="6" fill="#1C3F94" stroke="#4a7abf" stroke-width="2"/>
+      <polygon points="178,100 156,90 156,110" fill="#FBD000"/>
+      <rect x="10" y="70" width="50" height="60" rx="6" fill="#1C3F94" stroke="#4a7abf" stroke-width="2"/>
+      <polygon points="22,100 44,90 44,110" fill="#FBD000"/>
+    </svg>
     <div class="controles-txt">MOVER con flechas del teclado</div>
     <div class="powerup-grid">
       <div class="pu-item"><div class="pu-circle" style="background:radial-gradient(circle,#0096ff,#0060cc)">E</div><div class="pu-label" style="color:#96c8ff">Escudo</div></div>
@@ -1072,7 +1080,6 @@ function doLogin(){
   if(existing.some(e=>e.nombre.toLowerCase()===nombre.toLowerCase())){loginError.textContent='Nombre ya en uso';return}
   loginScreen.classList.add('hidden');
   menuScreen.classList.remove('hidden');
-  document.getElementById('arrowsImg').src='arrows.png';
   game=new Game();
   game.playerName=nombre;
   game.state='menu';
@@ -1123,9 +1130,6 @@ document.getElementById('btnPause').addEventListener('click',()=>{
 // TOUCH CONTROLS
 // ============================================================
 const ES_TACTIL=('ontouchstart' in window)||(navigator.maxTouchPoints>0);
-if(ES_TACTIL){
-  document.getElementById('arrowsImg').src='';
-}
 const rotateWarning=document.getElementById('rotateWarning');
 const touchControls=document.getElementById('touchControls');
 const joystickZone=document.getElementById('joystickZone');
